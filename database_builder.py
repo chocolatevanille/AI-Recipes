@@ -497,7 +497,6 @@ def substitute(rec):
     while True:
         event, values = window.read()
         if event == '-SUBMIT-':
-            print(values)
             val_list = []
             for i in values:
                 val_list.append(values[i])
@@ -702,24 +701,31 @@ def win_run():
         elif event == '-ADD-INGREDIENT-': # when the user wants to add a new ingredient to the database
             add_ingredient()
             window['-DISPLAY-INGREDIENT-'].update(menu_definition=['Ingredient', get_ingredient_name(ingredient_list)])
+            window['-STATUS-'].update('Added ingredient.')
         elif event == '-ADD-GENL-': # when the user wants to add a new ingredient to the database
             add_genL()
             window['-DISPLAY-GENL-'].update(menu_definition=['GenL', get_ingredient_name(genL_list)])
+            window['-STATUS-'].update('Added genL.')
         elif event == '-RECIPE-': # when the user changes the recipe
             selection = values[event] # get name of new recipe
             window['-RECIPE-TITLE-'].update(selection) # update recipe title display
             active_recipe = recipes[recipe_index(selection)] # update active recipe
             active_ingredients = get_ingredient_list(active_recipe) # get ingredients string
             window['-INGREDIENT-LIST-'].update(active_ingredients) # update displayed ingredients
+            window['-STATUS-'].update('Changed the recipe.')
         elif event == '-WEBSITE-': # when the user wants to open the recipe online
             url = active_recipe[2]
             webbrowser.open(url)
+            window['-STATUS-'].update('Opened the recipe online.')
         elif event == '-DISPLAY-ALLERGENS-': # when the user wants to display the allergies present in the current recipe
             display_allergens(active_recipe)
+            window['-STATUS-'].update('Displayed the allergens associated with the recipe.')
         elif event == '-SUBSTITUTION-': # when the user wants to substitute a food
             substitute(active_recipe)
+            window['-STATUS-'].update('Opened the substitution window.')
         elif event == '-GITHUB-': # when the user clicks on the GitHub button
             webbrowser.open('https://github.com/chocolatevanille/CS371-Recipes-Project')
+            window['-STATUS-'].update('Opened the GitHub repository.')
     window.close()
 
 def main():
