@@ -200,11 +200,14 @@ def new_ingredient(ing_name, lst_of_genLs, lst_of_isAs, lst_of_allergens):
     new_ing = Ingredient(ing_name)
     new_ing.clean()
     for i in lst_of_genLs:
-        new_ing.genL(i)
+        if i != '':
+            new_ing.genL(i)
     for j in lst_of_isAs:
-        new_ing.isA(j)
+        if j != '':
+            new_ing.isA(j)
     for k in lst_of_allergens:
-        new_ing.allergen(k)
+        if k != '':
+            new_ing.allergen(k)
     update_allergens(new_ing)
     update_isAs(new_ing)
     ingredient_list.append(new_ing)
@@ -214,13 +217,17 @@ def new_genL(genL_name, lst_of_genLs, lst_of_isAs, lst_of_allergens, lst_of_inst
     new_gL = GenL(genL_name)
     new_gL.clean()
     for i in lst_of_genLs:
-        new_gL.genL(i)
+        if i != '':
+            new_gL.genL(i)
     for j in lst_of_isAs:
-        new_gL.isA(j)
+        if j != '':
+            new_gL.isA(j)
     for k in lst_of_allergens:
-        new_gL.allergen(k)
+        if k != '':
+            new_gL.allergen(k)
     for l in lst_of_instances:
-        l.genL(new_gL)
+        if l != '':
+            l.genL(new_gL)
     update_allergens(new_gL)
     update_isAs(new_gL)
     genL_list.append(new_gL)
@@ -396,11 +403,82 @@ def show_genL(genL_name):
                 break
         window.close()
 
+# makes a window so the user can add a new ingredient
+def add_ingredient():
+    genL_names = []
+    for i in genL_list:
+        genL_names.append(i.name)
+    layout = [
+        [gui.Text('Add an ingredient to the database')],
+        [gui.Text('Name', size =(15, 1)), gui.InputText()],
+        [gui.Text('isAs: ', size =(15, 1)), gui.InputText(), gui.Text('(separate values with commas, no spaces)')],
+        [gui.Text('GenLs: ', size =(15, 1)), gui.Listbox(values=genL_names,select_mode=gui.LISTBOX_SELECT_MODE_MULTIPLE),
+         gui.Text('(click to highlight each of your selections)')],
+        [gui.Text('Allergens: ', size =(15, 1)), gui.InputText(), gui.Text('(separate values with commas, no spaces)')],
+        [gui.Submit(), gui.Cancel()]
+    ]
+    window = gui.Window('Add an ingredient', layout)
+    event, values = window.read()
+    window.close()
+    new_name = values[0]
+    new_isAs = values[1].split(',')
+    new_genLs_names = values[2]
+    new_genLs = []
+    for i in new_genLs_names:
+        for j in genL_list:
+            if j.name == i:
+                new_genLs.append(j)
+                break
+    new_allergens = values[3].split(',')
+    new_ingredient(new_name, new_genLs, new_isAs, new_allergens)
+
+# makes a window so the user can add a new genL
+def add_genL():
+    genL_names = []
+    for i in genL_list:
+        genL_names.append(i.name)
+    ing_names = []
+    for i in ingredient_list:
+        ing_names.append(i.name)
+    layout = [
+        [gui.Text('Add an ingredient to the database')],
+        [gui.Text('Name', size =(15, 1)), gui.InputText()],
+        [gui.Text('isAs: ', size =(15, 1)), gui.InputText(), gui.Text('(separate values with commas, no spaces)')],
+        [gui.Text('GenLs: ', size =(15, 1)), gui.Listbox(values=genL_names,select_mode=gui.LISTBOX_SELECT_MODE_MULTIPLE),
+         gui.Text('(click to highlight each of your selections)')],
+        [gui.Text('Allergens: ', size =(15, 1)), gui.InputText(), gui.Text('(separate values with commas, no spaces)')],
+        [gui.Text('Instances: ', size =(15, 1)), gui.Listbox(values=ing_names,select_mode=gui.LISTBOX_SELECT_MODE_MULTIPLE),
+         gui.Text('(click to highlight each of your selections)')],
+        [gui.Submit(), gui.Cancel()]
+    ]
+    window = gui.Window('Add an ingredient', layout)
+    event, values = window.read()
+    window.close()
+    new_name = values[0]
+    new_isAs = values[1].split(',')
+    new_genLs_names = values[2]
+    new_genLs = []
+    for i in new_genLs_names:
+        for j in genL_list:
+            if j.name == i:
+                new_genLs.append(j)
+                break
+    new_allergens = values[3].split(',')
+    new_instances_names = values[4]
+    new_instances = []
+    for i in new_instances_names:
+        for j in ingredient_list:
+            if j.name == i:
+                new_instances.append(j)
+                break
+    new_genL(new_name, new_genLs, new_isAs, new_allergens, new_instances)
+
 # get list of ingredient names from ingredients list
 def get_ingredient_name(ing_lst):
     result = []
     for i in ing_lst:
         result.append(i.name)
+    result.sort()
     return result
 
 # get list of recipe names from recipes list
@@ -410,6 +488,54 @@ def get_recipe_name(rec_lst):
         result.append(i[1].title())
     return result
 
+# get recipe index from name
+def recipe_index(recipe_name):
+    ind = -1
+    for i in recipes:
+        ind += 1
+        if recipe_name == i[1].title():
+            return ind
+    return KeyError
+
+# returns a string of the ingredients of a recipe
+def get_ingredient_list(rec):
+    result = ''
+    ind = -1
+    for i in rec[1].ingredients():
+        ind += 1
+        if ind > 0:
+            result += '\n' + i
+        else:
+            result += i
+    return result
+
+# makes a new window showing all of the allergens in the current recipe
+def display_allergens(rec):
+    allergens_str = '' # this builds up a long string of all the allergens based on the ingredient
+    for ing in rec[0]:
+        update_allergens(ing)
+        if len(allergens_str) > 0:
+            allergens_str += '\n'
+        allergens_str += ing.name + ': '
+        ind = -1
+        for i in ing.allergens:
+            ind += 1
+            if ind > 0:
+                allergens_str += ', ' + i
+            else:
+                allergens_str += i
+    layout = [
+            [gui.Text(rec[1].title() + ' allergens',font=(16))],
+            [gui.Text(allergens_str)],
+            [gui.Button('Close',key='-CLOSE-')]
+        ]
+    window = gui.Window('allergens',layout,size=(400,300),element_justification='center',margins=(6,20))
+    while True:
+        event, values = window.read()
+        if event == gui.WIN_CLOSED or event == '-CLOSE-': # when window closes
+            break
+    window.close()
+    
 ingredient_menu_def = ['Ingredient', get_ingredient_name(ingredient_list)]
 genLs_menu_def = ['GenL', get_ingredient_name(genL_list)]
 recipe_menu_def = ['Recipe', get_recipe_name(recipes)]
@@ -468,8 +594,6 @@ layout = [
 # window creation
 window = gui.Window('Recipe Project', layout,size=(750,600),element_justification='center')
 
-print(recipes[0][1].host())
-
 # event loop
 def win_run():
     # active recipe
@@ -487,9 +611,23 @@ def win_run():
             selection = values[event] # get name of genL
             show_genL(selection) # display genL info in new window
             window['-STATUS-'].update('Displayed info for ' + selection + '.')
+        elif event == '-ADD-INGREDIENT-': # when the user wants to add a new ingredient to the database
+            add_ingredient()
+            window['-DISPLAY-INGREDIENT-'].update(menu_definition=['Ingredient', get_ingredient_name(ingredient_list)])
+        elif event == '-ADD-GENL-': # when the user wants to add a new ingredient to the database
+            add_genL()
+            window['-DISPLAY-GENL-'].update(menu_definition=['GenL', get_ingredient_name(genL_list)])
+        elif event == '-RECIPE-': # when the user changes the recipe
+            selection = values[event] # get name of new recipe
+            window['-RECIPE-TITLE-'].update(selection) # update recipe title display
+            active_recipe = recipes[recipe_index(selection)] # update active recipe
+            active_ingredients = get_ingredient_list(active_recipe) # get ingredients string
+            window['-INGREDIENT-LIST-'].update(active_ingredients) # update displayed ingredients
         elif event == '-WEBSITE-':
             url = active_recipe[2]
             webbrowser.open(url)
+        elif event == '-DISPLAY-ALLERGENS-':
+            display_allergens(active_recipe)
     window.close()
 
 def main():
