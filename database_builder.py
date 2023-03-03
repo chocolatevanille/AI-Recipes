@@ -108,7 +108,6 @@ ingredient_list.append(garlic)
 
 pork_chop = Ingredient('pork chop')
 pork_chop.clean()
-pork_chop.isA('protein')
 pork_chop.genL(meat_product)
 ingredient_list.append(pork_chop)
 
@@ -415,22 +414,23 @@ def add_ingredient():
         [gui.Text('GenLs: ', size =(15, 1)), gui.Listbox(values=genL_names,select_mode=gui.LISTBOX_SELECT_MODE_MULTIPLE),
          gui.Text('(click to highlight each of your selections)')],
         [gui.Text('Allergens: ', size =(15, 1)), gui.InputText(), gui.Text('(separate values with commas, no spaces)')],
-        [gui.Submit(), gui.Cancel()]
+        [gui.Submit()]
     ]
     window = gui.Window('Add an ingredient', layout)
     event, values = window.read()
     window.close()
-    new_name = values[0]
-    new_isAs = values[1].split(',')
-    new_genLs_names = values[2]
-    new_genLs = []
-    for i in new_genLs_names:
-        for j in genL_list:
-            if j.name == i:
-                new_genLs.append(j)
-                break
-    new_allergens = values[3].split(',')
-    new_ingredient(new_name, new_genLs, new_isAs, new_allergens)
+    if values[1] != None:
+        new_name = values[0]
+        new_isAs = values[1].split(',')
+        new_genLs_names = values[2]
+        new_genLs = []
+        for i in new_genLs_names:
+            for j in genL_list:
+                if j.name == i:
+                    new_genLs.append(j)
+                    break
+        new_allergens = values[3].split(',')
+        new_ingredient(new_name, new_genLs, new_isAs, new_allergens)
 
 # makes a window so the user can add a new genL
 def add_genL():
@@ -449,36 +449,37 @@ def add_genL():
         [gui.Text('Allergens: ', size =(15, 1)), gui.InputText(), gui.Text('(separate values with commas, no spaces)')],
         [gui.Text('Instances: ', size =(15, 1)), gui.Listbox(values=ing_names,select_mode=gui.LISTBOX_SELECT_MODE_MULTIPLE),
          gui.Text('(click to highlight each of your selections)')],
-        [gui.Submit(), gui.Cancel()]
+        [gui.Submit()]
     ]
     window = gui.Window('Add an ingredient', layout)
     event, values = window.read()
     window.close()
-    new_name = values[0]
-    new_isAs = values[1].split(',')
-    new_genLs_names = values[2]
-    new_genLs = []
-    for i in new_genLs_names:
-        for j in genL_list:
-            if j.name == i:
-                new_genLs.append(j)
-                break
-    new_allergens = values[3].split(',')
-    new_instances_names = values[4]
-    new_instances = []
-    for i in new_instances_names:
-        for j in ingredient_list:
-            if j.name == i:
-                new_instances.append(j)
-                break
-    new_genL(new_name, new_genLs, new_isAs, new_allergens, new_instances)
+    if values[1] != None:
+        new_name = values[0]
+        new_isAs = values[1].split(',')
+        new_genLs_names = values[2]
+        new_genLs = []
+        for i in new_genLs_names:
+            for j in genL_list:
+                if j.name == i:
+                    new_genLs.append(j)
+                    break
+        new_allergens = values[3].split(',')
+        new_instances_names = values[4]
+        new_instances = []
+        for i in new_instances_names:
+            for j in ingredient_list:
+                if j.name == i:
+                    new_instances.append(j)
+                    break
+        new_genL(new_name, new_genLs, new_isAs, new_allergens, new_instances)
 
 # get list of ingredient names from ingredients list
 def get_ingredient_name(ing_lst):
     result = []
     for i in ing_lst:
         result.append(i.name)
-    result.sort()
+    result.sort() # sort them alphabetically
     return result
 
 # get list of recipe names from recipes list
@@ -536,10 +537,12 @@ def display_allergens(rec):
             break
     window.close()
     
+# initializing menu definitions for the GUI    
 ingredient_menu_def = ['Ingredient', get_ingredient_name(ingredient_list)]
 genLs_menu_def = ['GenL', get_ingredient_name(genL_list)]
 recipe_menu_def = ['Recipe', get_recipe_name(recipes)]
 
+# initialize the ingredient list for menu_def (GUI stuff)
 ing_lst = ''
 ind = -1
 for i in recipes[0][1].ingredients():
@@ -549,6 +552,7 @@ for i in recipes[0][1].ingredients():
     else:
         ing_lst += i
 
+# initialize the instructions list for recipes (GUI stuff)
 ins_lst = ''
 ind = -1
 for i in recipes[0][1].instructions_list():
@@ -623,12 +627,12 @@ def win_run():
             active_recipe = recipes[recipe_index(selection)] # update active recipe
             active_ingredients = get_ingredient_list(active_recipe) # get ingredients string
             window['-INGREDIENT-LIST-'].update(active_ingredients) # update displayed ingredients
-        elif event == '-WEBSITE-':
+        elif event == '-WEBSITE-': # when the user wants to open the recipe online
             url = active_recipe[2]
             webbrowser.open(url)
-        elif event == '-DISPLAY-ALLERGENS-':
+        elif event == '-DISPLAY-ALLERGENS-': # when the user wants to display the allergies present in the current recipe
             display_allergens(active_recipe)
-        elif event == '-GITHUB-':
+        elif event == '-GITHUB-': # when the user clicks on the GitHub button
             webbrowser.open('https://github.com/chocolatevanille/CS371-Recipes-Project')
     window.close()
 
