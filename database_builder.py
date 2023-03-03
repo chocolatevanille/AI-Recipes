@@ -628,6 +628,8 @@ def win_run():
             webbrowser.open(url)
         elif event == '-DISPLAY-ALLERGENS-':
             display_allergens(active_recipe)
+        elif event == '-GITHUB-':
+            webbrowser.open('https://github.com/chocolatevanille/CS371-Recipes-Project')
     window.close()
 
 def main():
