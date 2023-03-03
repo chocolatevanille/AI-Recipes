@@ -136,6 +136,11 @@ salt_and_pepper.clean()
 salt_and_pepper.isA('seasoning')
 ingredient_list.append(salt_and_pepper)
 
+ground_beef = Ingredient('ground beef')
+ground_beef.clean()
+ground_beef.genL(meat_product)
+ingredient_list.append(ground_beef)
+
 chicken_breast = Ingredient('chicken breast')
 chicken_breast.clean()
 chicken_breast.genL(meat_product)
@@ -189,7 +194,7 @@ red_pepper.isA('spice')
 ingredient_list.append(red_pepper)
 
 recipes[0][0] = [ketchup, honey, soy_sauce, garlic, pork_chop]
-recipes[1][0] = [cabbage, tomato, onion, italian_seasoning, salt_and_pepper]
+recipes[1][0] = [cabbage, tomato, onion, italian_seasoning, salt_and_pepper, ground_beef]
 recipes[2][0] = [chicken_breast, barbecue_sauce, salt_and_pepper]
 recipes[3][0] = [chicken_breast, salt_and_pepper, olive_oil, thyme, parsley, rosemary, apple_cider_vinegar, butter, chicken_broth]
 recipes[4][0] = [honey, soy_sauce, red_pepper, olive_oil, chicken_breast]
@@ -474,6 +479,85 @@ def add_genL():
                     break
         new_genL(new_name, new_genLs, new_isAs, new_allergens, new_instances)
 
+# window for making substitutions
+def substitute(rec):
+    ingredients = []
+    for i in rec[0]:
+        ingredients.append(i.name)
+    layout = [
+        [gui.Text('Choose an ingredient to replace: ')], 
+        [gui.Radio(text, 1) for text in ingredients],
+        [gui.Text('Type any allergies, separated by commas without spaces: '),
+         gui.InputText()],
+        [gui.Button('Submit',key='-SUBMIT-')],
+        [gui.Text('',key='-RESULT-')]
+    ]
+    window = gui.Window('Substitution', layout)
+
+    while True:
+        event, values = window.read()
+        if event == '-SUBMIT-':
+            print(values)
+            val_list = []
+            for i in values:
+                val_list.append(values[i])
+            old_ing = get_ingredient_to_replace(val_list,rec)
+            user_allergens = []
+            if val_list[-1] != '':
+                user_allergens = val_list[-1].split(',')
+            if old_ing:
+                possible_replacers = matcher(old_ing,user_allergens)
+                if len(possible_replacers) > 0:
+                    replacers_str = ''
+                    ind = -1
+                    for i in possible_replacers:
+                        ind += 1
+                        if ind > 0:
+                            replacers_str += ', ' + i.name
+                        else:
+                            replacers_str += i.name
+                    window['-RESULT-'].update('Possible replacements: ' + replacers_str)
+                else:
+                    window['-RESULT-'].update('There are no replacements that fit the parameters.')
+        elif event == gui.WIN_CLOSED:
+            break
+    window.close()
+
+# helper for substitute    
+def get_ingredient_to_replace(val,rec):
+    ind = -1
+    for i in val:
+        ind += 1
+        if i and not isinstance(val[i], str):
+            return rec[0][ind]
+    return False
+
+# helper for matcher
+def no_allergens(list1, list2):
+    for val in list1:
+        if val in list2:
+            return False
+    return True
+
+# helper for matcher
+def all_isAs(list1, list2):
+    for val in list1:
+        if val not in list2:
+            return False
+    return True
+
+def matcher(ing,user_allergens):
+    matches = []
+    update_isAs(ing)
+    for i in ingredient_list:
+        if i != ing:
+            update_allergens(i)
+            update_isAs(i)
+            if no_allergens(user_allergens,i.allergens) and all_isAs(ing.isAList,i.isAList):
+                matches.append(i)
+    return matches
+
+
 # get list of ingredient names from ingredients list
 def get_ingredient_name(ing_lst):
     result = []
@@ -632,6 +716,8 @@ def win_run():
             webbrowser.open(url)
         elif event == '-DISPLAY-ALLERGENS-': # when the user wants to display the allergies present in the current recipe
             display_allergens(active_recipe)
+        elif event == '-SUBSTITUTION-': # when the user wants to substitute a food
+            substitute(active_recipe)
         elif event == '-GITHUB-': # when the user clicks on the GitHub button
             webbrowser.open('https://github.com/chocolatevanille/CS371-Recipes-Project')
     window.close()
