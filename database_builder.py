@@ -1,5 +1,4 @@
 from recipe_scrapers import scrape_me
-from ingredient_parser import parse_ingredient
 import PySimpleGUI as gui
 import webbrowser
 
