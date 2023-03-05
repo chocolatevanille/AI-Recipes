@@ -636,16 +636,21 @@ def substitute(rec):
     ingredients = []
     for i in rec[0]:
         ingredients.append(i.name)
+    genL_names = []
+    for i in genL_list:
+        genL_names.append(i.name)
     layout = [
         [gui.Text('Choose an ingredient to replace: ')], 
         [gui.Radio(text, 1) for text in ingredients],
         [gui.Text('Type any allergies, separated by commas without spaces: '),
          gui.InputText()],
+        [gui.Text('Select any genLs you wish to exclude in the substitutes: '),
+         gui.Listbox(values=genL_names,select_mode=gui.LISTBOX_SELECT_MODE_MULTIPLE),
+         gui.Text('(click to highlight each of your selections)')],
         [gui.Button('Submit',key='-SUBMIT-')],
         [gui.Text('',key='-RESULT-')]
     ]
     window = gui.Window('Substitution', layout)
-
     while True:
         event, values = window.read()
         if event == '-SUBMIT-':
@@ -654,10 +659,17 @@ def substitute(rec):
                 val_list.append(values[i])
             old_ing = get_ingredient_to_replace(val_list,rec)
             user_allergens = []
-            if val_list[-1] != '':
-                user_allergens = val_list[-1].split(',')
+            if val_list[-2] != '':
+                user_allergens = val_list[-2].split(',')
+            banned_genL_names = val_list[-1]
+            banned_genLs = []
+            for i in banned_genL_names:
+                for j in genL_list:
+                    if j.name == i:
+                        banned_genLs.append(j)
+                        break
             if old_ing:
-                possible_replacers = matcher(old_ing,user_allergens)
+                possible_replacers = matcher(old_ing,user_allergens,banned_genLs)
                 if len(possible_replacers) > 0:
                     replacers_str = ''
                     ind = -1
@@ -697,14 +709,31 @@ def all_isAs(list1, list2):
             return False
     return True
 
-def matcher(ing,user_allergens):
+def no_genLs_helper(ele):
+    result = [ele]
+    for i in ele.genLList:
+        result += no_genLs_helper(i)
+    return result
+
+def no_genLs(list1,list2):
+    all_genLs = []
+    for i in list1:
+        all_genLs.append(no_genLs_helper(i))
+    all_genLs_flat = [item for sublist in all_genLs for item in sublist]
+    for val in all_genLs_flat:
+        if val in list2:
+            return False
+    return True
+
+
+def matcher(ing,user_allergens,banned_genLs):
     matches = []
     update_isAs(ing)
     for i in ingredient_list:
         if i != ing:
             update_allergens(i)
             update_isAs(i)
-            if no_allergens(user_allergens,i.allergens) and all_isAs(ing.isAList,i.isAList):
+            if no_allergens(user_allergens,i.allergens) and all_isAs(ing.isAList,i.isAList) and no_genLs(i.genLList,banned_genLs):
                 matches.append(i)
     return matches
 
