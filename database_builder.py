@@ -55,7 +55,9 @@ recipe_urls = ['https://www.allrecipes.com/recipe/235158/worlds-best-honey-garli
                'https://www.allrecipes.com/recipe/229324/ground-beef-and-cabbage/',
                'https://www.allrecipes.com/recipe/280052/bbq-chicken-breasts-in-the-oven/',
                'https://www.allrecipes.com/recipe/245367/pan-roasted-chicken-breasts/',
-               'https://www.allrecipes.com/recipe/231939/honey-glazed-chicken/']
+               'https://www.allrecipes.com/recipe/231939/honey-glazed-chicken/',
+               'https://www.allrecipes.com/recipe/8495/chicken-cordon-bleu-i/',
+               'https://www.allrecipes.com/recipe/244458/buttered-noodles/']
 
 # parse recipes from URLs
 # gives methods .ingredients(), .instructions(), .instructions_list(), .title(), .total_time()
@@ -70,6 +72,12 @@ milk_product.clean()
 milk_product.allergen('lactose')
 genL_list.append(milk_product)
 
+cheese = GenL('cheese')
+cheese.clean()
+cheese.isA('cheese')
+cheese.genL(milk_product)
+genL_list.append(cheese)
+
 animal_product = GenL('animal product')
 animal_product.clean()
 animal_product.allergen('vegan')
@@ -82,6 +90,38 @@ meat_product.isA('meat')
 meat_product.isA('protein')
 meat_product.genL(animal_product)
 genL_list.append(meat_product)
+
+peanut_product = GenL('peanut product')
+peanut_product.clean()
+peanut_product.allergen('peanut')
+genL_list.append(peanut_product)
+
+nonstick_element = GenL('nonstick element')
+nonstick_element.clean()
+nonstick_element.isA('nonstick element')
+genL_list.append(nonstick_element)
+
+spice = GenL('spice')
+spice.clean()
+spice.isA('spice')
+spice.isA('seasoning')
+genL_list.append(spice)
+
+tree_nut = GenL('tree nut')
+tree_nut.clean()
+tree_nut.isA('tree nut')
+tree_nut.allergen('tree nut')
+genL_list.append(tree_nut)
+
+coating = GenL('coating')
+coating.clean()
+coating.isA('coating')
+genL_list.append(coating)
+
+noodle = GenL('noodle')
+noodle.clean()
+noodle.isA('noodle')
+genL_list.append(noodle)
 
 # all ingredients
 
@@ -102,7 +142,7 @@ ingredient_list.append(soy_sauce)
 
 garlic = Ingredient('garlic')
 garlic.clean()
-garlic.isA('spice')
+garlic.genL(spice)
 ingredient_list.append(garlic)
 
 pork_chop = Ingredient('pork chop')
@@ -127,12 +167,12 @@ ingredient_list.append(onion)
 
 italian_seasoning = Ingredient('italian seasoning')
 italian_seasoning.clean()
-italian_seasoning.isA('seasoning')
+italian_seasoning.genL(spice)
 ingredient_list.append(italian_seasoning)
 
 salt_and_pepper = Ingredient('salt and ground black pepper')
 salt_and_pepper.clean()
-salt_and_pepper.isA('seasoning')
+salt_and_pepper.genL(spice)
 ingredient_list.append(salt_and_pepper)
 
 ground_beef = Ingredient('ground beef')
@@ -157,17 +197,17 @@ ingredient_list.append(olive_oil)
 
 thyme = Ingredient('thyme')
 thyme.clean()
-thyme.isA('spice')
+thyme.genL(spice)
 ingredient_list.append(thyme)
 
 parsley = Ingredient('parsley')
 parsley.clean()
-parsley.isA('spice')
+parsley.genL(spice)
 ingredient_list.append(parsley)
 
 rosemary = Ingredient('rosemary')
 rosemary.clean()
-rosemary.isA('spice')
+rosemary.genL(spice)
 ingredient_list.append(rosemary)
 
 apple_cider_vinegar = Ingredient('apple cider vinegar')
@@ -189,14 +229,123 @@ ingredient_list.append(chicken_broth)
 
 red_pepper = Ingredient('red pepper flake')
 red_pepper.clean()
-red_pepper.isA('spice')
+red_pepper.genL(spice)
 ingredient_list.append(red_pepper)
+
+cooking_spray = Ingredient('cooking spray')
+cooking_spray.clean()
+cooking_spray.genL(nonstick_element)
+ingredient_list.append(cooking_spray)
+
+salt = Ingredient('salt')
+salt.clean()
+salt.genL(spice)
+ingredient_list.append(salt)
+
+black_pepper = Ingredient('black pepper')
+black_pepper.clean()
+black_pepper.genL(spice)
+ingredient_list.append(black_pepper)
+
+swiss_cheese = Ingredient('swiss cheese')
+swiss_cheese.clean()
+swiss_cheese.genL(cheese)
+ingredient_list.append(swiss_cheese)
+
+ham = Ingredient('ham')
+ham.clean()
+ham.genL(meat_product)
+ingredient_list.append(ham)
+
+bread_crumbs = Ingredient('bread crumbs')
+bread_crumbs.clean()
+bread_crumbs.genL(coating)
+ingredient_list.append(bread_crumbs)
+
+fettuccine = Ingredient('fettuccine')
+fettuccine.clean()
+fettuccine.genL(noodle)
+ingredient_list.append(fettuccine)
+
+# ingredients not in recipes but added as potential substitutes
+
+american_cheese = Ingredient('american cheese')
+american_cheese.clean()
+american_cheese.genL(cheese)
+ingredient_list.append(american_cheese)
+
+mozzarella = Ingredient('mozzarella')
+mozzarella.clean()
+mozzarella.genL(cheese)
+ingredient_list.append(mozzarella)
+
+parmesan_cheese = Ingredient('parmesan cheese')
+parmesan_cheese.clean()
+parmesan_cheese.genL(cheese)
+ingredient_list.append(parmesan_cheese)
+
+provolone_cheese = Ingredient('provolone cheese')
+provolone_cheese.clean()
+provolone_cheese.genL(cheese)
+ingredient_list.append(provolone_cheese)
+
+crackers = Ingredient('crackers')
+crackers.clean()
+crackers.genL(coating)
+ingredient_list.append(crackers)
+
+almond = Ingredient('almond')
+almond.clean()
+almond.genL(coating)
+almond.genL(tree_nut)
+ingredient_list.append(almond)
+
+peanut = Ingredient('peanut')
+peanut.clean()
+peanut.genL(coating)
+peanut.genL(peanut_product)
+ingredient_list.append(peanut)
+
+coconut_oil = Ingredient('coconut oil')
+coconut_oil.clean()
+coconut_oil.genL(tree_nut)
+coconut_oil.isA('butter')
+ingredient_list.append(coconut_oil)
+
+pam = Ingredient('pam')
+pam.clean()
+pam.genL(nonstick_element)
+ingredient_list.append(pam)
+
+vegetable_broth = Ingredient('vegetable broth')
+vegetable_broth.clean()
+vegetable_broth.isA('broth')
+ingredient_list.append(vegetable_broth)
+
+leek = Ingredient('leek')
+leek.clean()
+leek.isA('alliaceae')
+ingredient_list.append(leek)
+
+shallot = Ingredient('shallot')
+shallot.clean()
+shallot.isA('alliaceae')
+ingredient_list.append(shallot)
+
+spaghetti = Ingredient('spaghetti')
+spaghetti.clean()
+spaghetti.genL(noodle)
+ingredient_list.append(spaghetti)
+
+# adding ingredients to their recipes
 
 recipes[0][0] = [ketchup, honey, soy_sauce, garlic, pork_chop]
 recipes[1][0] = [cabbage, tomato, onion, italian_seasoning, salt_and_pepper, ground_beef]
 recipes[2][0] = [chicken_breast, barbecue_sauce, salt_and_pepper]
 recipes[3][0] = [chicken_breast, salt_and_pepper, olive_oil, thyme, parsley, rosemary, apple_cider_vinegar, butter, chicken_broth]
 recipes[4][0] = [honey, soy_sauce, red_pepper, olive_oil, chicken_breast]
+recipes[5][0] = [cooking_spray, chicken_breast, salt, black_pepper, swiss_cheese, ham, bread_crumbs]
+recipes[6][0] = [fettuccine, butter, salt_and_pepper, parmesan_cheese]
 
 # user adds new ingredient into database
 def new_ingredient(ing_name, lst_of_genLs, lst_of_isAs, lst_of_allergens):
@@ -435,6 +584,8 @@ def add_ingredient():
                     break
         new_allergens = values[3].split(',')
         new_ingredient(new_name, new_genLs, new_isAs, new_allergens)
+        return True
+    return False
 
 # makes a window so the user can add a new genL
 def add_genL():
@@ -477,6 +628,8 @@ def add_genL():
                     new_instances.append(j)
                     break
         new_genL(new_name, new_genLs, new_isAs, new_allergens, new_instances)
+        return True
+    return False
 
 # window for making substitutions
 def substitute(rec):
@@ -691,20 +844,28 @@ def win_run():
             break
         elif event == '-DISPLAY-INGREDIENT-': # when the user wants to display an ingredient
             selection = values[event] # get name of ingredient
+            window['-STATUS-'].update('Displayed info for ingredient: ' + selection + '.')
             show_ing(selection) # display ingredient info in new window
-            window['-STATUS-'].update('Displayed info for ' + selection + '.')
         elif event == '-DISPLAY-GENL-': # when the user wants to display a genL
             selection = values[event] # get name of genL
+            window['-STATUS-'].update('Displayed info for genL: ' + selection + '.')
             show_genL(selection) # display genL info in new window
-            window['-STATUS-'].update('Displayed info for ' + selection + '.')
         elif event == '-ADD-INGREDIENT-': # when the user wants to add a new ingredient to the database
-            add_ingredient()
+            window['-STATUS-'].update('Opened the window to add an ingredient.')
+            test = add_ingredient()
             window['-DISPLAY-INGREDIENT-'].update(menu_definition=['Ingredient', get_ingredient_name(ingredient_list)])
-            window['-STATUS-'].update('Added ingredient.')
+            if test:
+                window['-STATUS-'].update('Added ingredient.')
+            else:
+                window['-STATUS-'].update('Canceled adding ingredient.')
         elif event == '-ADD-GENL-': # when the user wants to add a new ingredient to the database
-            add_genL()
+            window['-STATUS-'].update('Opened the window to add a genL.')
+            test = add_genL()
             window['-DISPLAY-GENL-'].update(menu_definition=['GenL', get_ingredient_name(genL_list)])
-            window['-STATUS-'].update('Added genL.')
+            if test:
+                window['-STATUS-'].update('Added genL.')
+            else:
+                window['-STATUS-'].update('Canceled adding genL.')
         elif event == '-RECIPE-': # when the user changes the recipe
             selection = values[event] # get name of new recipe
             window['-RECIPE-TITLE-'].update(selection) # update recipe title display
@@ -717,8 +878,8 @@ def win_run():
             webbrowser.open(url)
             window['-STATUS-'].update('Opened the recipe online.')
         elif event == '-DISPLAY-ALLERGENS-': # when the user wants to display the allergies present in the current recipe
-            display_allergens(active_recipe)
             window['-STATUS-'].update('Displayed the allergens associated with the recipe.')
+            display_allergens(active_recipe)
         elif event == '-SUBSTITUTION-': # when the user wants to substitute a food
             substitute(active_recipe)
             window['-STATUS-'].update('Opened the substitution window.')
