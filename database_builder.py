@@ -86,7 +86,6 @@ genL_list.append(animal_product)
 
 meat_product = GenL('meat product')
 meat_product.clean()
-meat_product.isA('meat')
 meat_product.isA('protein')
 meat_product.genL(animal_product)
 genL_list.append(meat_product)
@@ -336,6 +335,11 @@ spaghetti = Ingredient('spaghetti')
 spaghetti.clean()
 spaghetti.genL(noodle)
 ingredient_list.append(spaghetti)
+
+tofu = Ingredient('tofu')
+tofu.clean()
+tofu.isA('protein')
+ingredient_list.append(tofu)
 
 # adding ingredients to their recipes
 
