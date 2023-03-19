@@ -2,6 +2,9 @@
 
 Run `pip install -r requirements.txt` before running the program
 
+IMPORTANT: This program has only been tested on Windows and is not guaranteed
+to work on Mac OS or Linux.
+
 Running database_builder.py will open a window with various options to 
 inspect the recipes, add ingredients or genLs, request ingredient substitutions, 
 and more.
