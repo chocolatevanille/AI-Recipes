@@ -917,7 +917,7 @@ def win_run():
             substitute(active_recipe)
             window['-STATUS-'].update('Opened the substitution window.')
         elif event == '-GITHUB-': # when the user clicks on the GitHub button
-            webbrowser.open('https://github.com/chocolatevanille/CS371-Recipes-Project')
+            webbrowser.open('https://github.com/chocolatevanille/Recipes/')
             window['-STATUS-'].update('Opened the GitHub repository.')
     window.close()
 
