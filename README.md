@@ -1,7 +1,7 @@
 # Recipes
 
 This program generates modifications to recipes based on user allergies
-and preferences using knowledge, representation, and reasoning (KRR) AI.
+and preferences using knowledge representation and reasoning (KRR) AI.
 
 Run `pip install -r requirements.txt` before running the program
 
