@@ -1,5 +1,7 @@
 # AI Recipes
 
+## [Demo](https://www.youtube.com/watch?v=d10Gk_kbYdo)
+
 This program generates modifications to recipes based on user allergies
 and preferences using knowledge representation and reasoning (KRR) AI.
 
